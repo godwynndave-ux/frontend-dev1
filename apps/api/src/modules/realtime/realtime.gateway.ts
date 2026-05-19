@@ -4,20 +4,22 @@ import {
   SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
-} from "@nestjs/websockets";
-import { Server, Socket } from "socket.io";
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-  cors: { origin: "*" },
+  cors: { origin: '*' },
 })
-export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class RealtimeGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   private userSockets = new Map<string, string>(); // userId → socketId
 
   handleConnection(client: Socket) {
-    console.log("Client connected:", client.id);
+    console.log('Client connected:', client.id);
   }
 
   handleDisconnect(client: Socket) {
@@ -29,7 +31,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
   }
 
-  @SubscribeMessage("register")
+  @SubscribeMessage('register')
   handleRegister(client: Socket, userId: string) {
     this.userSockets.set(userId, client.id);
   }

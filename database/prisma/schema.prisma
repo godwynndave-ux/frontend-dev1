@@ -115,6 +115,7 @@ model Match {
 
   @@unique([userOneId, userTwoId])
   
+  
   @@index([status])
 }
 
