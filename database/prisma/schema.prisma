@@ -6,3 +6,242 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum AccountType {
+  PERSONAL
+  BUSINESS
+}
+
+enum SwipeType {
+  LEFT
+  RIGHT
+}
+
+enum MatchStatus {
+  ACTIVE
+  BLOCKED
+  UNMATCHED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique
+  username          String             @unique
+  passwordHash      String
+
+  refreshTokens RefreshToken[]
+
+  currentMode       AccountType        @default(PERSONAL)
+
+  isVerified        Boolean            @default(false)
+  isActive          Boolean            @default(true)
+  isBanned          Boolean            @default(false)
+
+  lastLoginAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+
+  personalProfile   PersonalProfile?
+  businessProfile   BusinessProfile?
+
+  sentSwipes        Swipe[]            @relation("SenderSwipes")
+  receivedSwipes    Swipe[]            @relation("ReceiverSwipes")
+
+  userOneMatches    Match[]            @relation("UserOneMatches")
+  userTwoMatches    Match[]            @relation("UserTwoMatches")
+
+  sentMessages      Message[]
+
+  reportsMade       Report[]           @relation("Reporter")
+  reportsReceived   Report[]           @relation("ReportedUser")
+
+  @@index([email])
+  @@index([username])
+  @@index([currentMode])
+}
+
+model PersonalProfile {
+  id                String      @id @default(uuid())
+
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName         String
+  lastName          String
+
+  birthDate         DateTime?
+  gender            String?
+
+  bio               String?     @db.Text
+  location          String?
+
+  skills            String[]
+  interests         String[]
+
+  education         String?
+  experience        String?
+
+  portfolioUrl      String?
+  linkedinUrl       String?
+  githubUrl         String?
+
+  profileImageUrl   String?
+  resumeUrl         String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([location])
+}
+
+model BusinessProfile {
+  id                String      @id @default(uuid())
+
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  businessName      String
+  industry          String
+
+  description       String?     @db.Text
+
+  websiteUrl        String?
+
+  businessEmail     String?
+  phoneNumber       String?
+
+  location          String?
+
+  teamSize          Int?
+
+  services          String[]
+  lookingFor        String[]
+
+  logoUrl           String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([industry])
+  @@index([location])
+}
+
+model Swipe {
+  id                String      @id @default(uuid())
+
+  senderId          String
+  receiverId        String
+
+  type              SwipeType
+
+  createdAt         DateTime    @default(now())
+
+  sender            User        @relation("SenderSwipes", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver          User        @relation("ReceiverSwipes", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([type])
+}
+
+model Match {
+  id                String        @id @default(uuid())
+
+  userOneId         String
+  userTwoId         String
+
+  status            MatchStatus   @default(ACTIVE)
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  userOne           User          @relation("UserOneMatches", fields: [userOneId], references: [id], onDelete: Cascade)
+  userTwo           User          @relation("UserTwoMatches", fields: [userTwoId], references: [id], onDelete: Cascade)
+
+  conversations     Conversation[]
+
+  @@unique([userOneId, userTwoId])
+  @@index([status])
+}
+
+model Conversation {
+  id                String        @id @default(uuid())
+
+  matchId           String        @unique
+  match             Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  messages          Message[]
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Message {
+  id                String        @id @default(uuid())
+
+  conversationId    String
+  senderId          String
+
+  type              MessageType   @default(TEXT)
+
+  content           String        @db.Text
+
+  isSeen            Boolean       @default(false)
+
+  createdAt         DateTime      @default(now())
+
+  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender            User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+model Report {
+  id                String          @id @default(uuid())
+
+  reporterId        String
+  reportedUserId    String
+
+  reason            String
+  description       String?         @db.Text
+
+  status            ReportStatus    @default(PENDING)
+
+  createdAt         DateTime        @default(now())
+
+  reporter          User            @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser      User            @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model RefreshToken {
+  id                String      @id @default(uuid())
+
+  userId            String
+  token             String      @unique
+
+  expiresAt         DateTime
+
+  createdAt         DateTime    @default(now())
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
