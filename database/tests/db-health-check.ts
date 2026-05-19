@@ -42,13 +42,6 @@ await prisma.swipe.create({
   },
 });
 
-// 🔥 MANUALLY CALL MATCH ENGINE
-const matchService = new MatchService();
-
-const match = await matchService.checkAndCreateMatch(
-  userA.id,
-  userB.id
-);
     // 4. Check match
     const match = await prisma.match.findFirst({
       where: {
