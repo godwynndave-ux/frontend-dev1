@@ -13,10 +13,24 @@ const config: Config = {
           navy: '#0D1B2A',
           teal: '#0EA5A5',
           orange: '#FF7A00',
+          white: '#FFFFFF',
+          soft: '#F3F6F9',
         },
+      },
+      transitionTimingFunction: {
+        'premium': 'cubic-bezier(0.32, 0.72, 0, 1)',
+        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      animation: {
+        'shimmer': 'shimmer 2s infinite',
       },
     },
   },
-  plugins: [],
+  plugins: [], // REMOVED the require line here
 };
 export default config;
