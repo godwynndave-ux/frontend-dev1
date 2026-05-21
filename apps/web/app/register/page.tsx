@@ -157,88 +157,75 @@ export default function RegisterPage() {
                     </div>
                   </div>
                 </div>
+                {/* SHOW CONFIRM PASSWORD ONLY WHEN PASSWORD IS FILLED */}
+                  {password.length > 8 && (
+                    <div className="space-y-1">
 
-                {/* CONFIRM PASSWORD */}
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-widest mb-2 ml-1 text-slate-500">Password</label>
-                  <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#0EA5A5] transition-colors" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full h-12 rounded-xl border border-slate-200 bg-[#FAFAFA] pl-12 pr-12 text-sm outline-none focus:border-[#0EA5A5] transition-all"
-                    />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-[#0EA5A5]">
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
+                      {/* CONFIRM PASSWORD */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest mb-2 ml-1 text-slate-500">
+                          Confirm Password
+                        </label>
 
-                  {/* CONFIRM PASSWORD */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest mb-2 ml-1 text-slate-500">
-                      Confirm Password
-                    </label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#0EA5A5] transition-colors" />
 
-                    <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#0EA5A5] transition-colors" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className={`w-full h-12 rounded-xl bg-[#FAFAFA] pl-12 pr-12 text-sm outline-none transition-all border ${
+                              confirmPassword.length === 0
+                                ? 'border-slate-200 focus:border-[#0EA5A5]'
+                                : password === confirmPassword
+                                ? 'border-green-500 focus:border-green-500'
+                                : 'border-red-500 focus:border-red-500'
+                            }`}
+                          />
 
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className={`w-full h-12 rounded-xl bg-[#FAFAFA] pl-12 pr-12 text-sm outline-none transition-all border ${
-                          confirmPassword.length === 0
-                            ? 'border-slate-200 focus:border-[#0EA5A5]'
-                            : password === confirmPassword
-                            ? 'border-green-500 focus:border-green-500'
-                            : 'border-red-500 focus:border-red-500'
-                        }`}
-                      />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-[#0EA5A5]"
+                          >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
 
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-[#0EA5A5]"
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
+                        {/* PASSWORD MATCH INDICATOR */}
+                        <div className="mt-2 px-1">
+                          <div className="flex gap-1 h-1">
+                            <div
+                              className={`flex-1 rounded-full transition-all duration-500 ${
+                                confirmPassword.length === 0
+                                  ? 'bg-slate-100'
+                                  : password === confirmPassword
+                                  ? 'bg-green-500'
+                                  : 'bg-red-500'
+                              }`}
+                            />
+                          </div>
 
-                    {/* PASSWORD MATCH INDICATOR */}
-                    <div className="mt-2 px-1">
-                      <div className="flex gap-1 h-1">
-                        <div
-                          className={`flex-1 rounded-full transition-all duration-500 ${
-                            confirmPassword.length === 0
-                              ? 'bg-slate-100'
+                          <p
+                            className={`mt-2 text-xs font-medium transition-all ${
+                              confirmPassword.length === 0
+                                ? 'text-slate-400'
+                                : password === confirmPassword
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                          >
+                            {confirmPassword.length === 0
+                              ? 'Re-enter your password'
                               : password === confirmPassword
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
-                          }`}
-                        />
+                              ? '✓ Passwords match'
+                              : '✗ Passwords do not match'}
+                          </p>
+                        </div>
                       </div>
-
-                      <p
-                        className={`mt-2 text-xs font-medium transition-all ${
-                          confirmPassword.length === 0
-                            ? 'text-slate-400'
-                            : password === confirmPassword
-                            ? 'text-green-600'
-                            : 'text-red-600'
-                        }`}
-                      >
-                        {confirmPassword.length === 0
-                          ? 'Re-enter your password'
-                          : password === confirmPassword
-                          ? '✓ Passwords match'
-                          : '✗ Passwords do not match'}
-                      </p>
                     </div>
-                  </div>
-                </div>
+                  )}
 
                 {/* SUBMIT BUTTON */}
                 <button className="w-full h-14 rounded-2xl bg-[#FF7A00] hover:bg-[#e66e00] text-white text-base font-bold shadow-lg shadow-[#FF7A00]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2">
