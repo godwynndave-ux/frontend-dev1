@@ -17,6 +17,9 @@ const config: Config = {
           soft: '#F3F6F9',
         },
       },
+      backgroundImage: {
+        'glass-gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%)',
+      },
       transitionTimingFunction: {
         'premium': 'cubic-bezier(0.32, 0.72, 0, 1)',
         'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
